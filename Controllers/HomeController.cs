@@ -15,6 +15,9 @@ namespace Adega.Controllers
 
         public IActionResult Index()
         {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UsuarioNome")))
+                return RedirectToAction("Index", "Login");
+
             return View();
         }
 

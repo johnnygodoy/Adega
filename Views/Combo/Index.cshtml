@@ -1,0 +1,66 @@
+﻿@model List<Adega.Models.Combo>
+
+<h2 class="text-white mb-3">📦 Lista de Combos</h2>
+
+<form method="get" class="row g-2 mb-4 align-items-end">
+    <div class="col-md-5">
+        <input type="text" name="busca" value="@ViewBag.Busca" class="form-control text-uppercase" placeholder="🔍 Buscar por nome do combo" />
+    </div>
+
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">🔍 Buscar</button>
+    </div>
+
+    <div class="col-md-2">
+        <a href="/Combo/Index" class="btn btn-secondary w-100">❌ Limpar</a>
+    </div>
+
+    <div class="col-md-3">
+        <a href="/Combo/Criar" class="btn btn-success w-100">➕ Novo Combo</a>
+    </div>
+</form>
+
+<table class="table table-dark table-hover table-striped table-bordered rounded overflow-hidden shadow">
+    <thead class="table-secondary text-dark">
+        <tr>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Produtos</th>
+            <th class="text-center">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var combo in Model)
+        {
+            <tr>
+                <td>@combo.Nome</td>
+                <td>R$ @combo.PrecoCombo.ToString("F2")</td>
+                <td>
+                    <ul class="mb-0">
+                        @foreach (var item in combo.Produtos)
+                        {
+                            <li>@item.Produto?.Nome x @item.Quantidade</li>
+                        }
+                    </ul>
+                </td>
+                <td class="text-center">
+                    <a href="/Combo/Editar/@combo.Id" class="btn btn-sm btn-outline-primary me-2">✏️ Editar</a>
+                    <a href="/Combo/Excluir/@combo.Id" class="btn btn-sm btn-outline-danger" onclick="return confirm('Deseja excluir o combo?')">🗑️ Excluir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav class="mt-4">
+    <ul class="pagination justify-content-center mb-0">
+        @for (int i = 1; i <= (int)ViewBag.TotalPaginas; i++)
+        {
+            <li class="page-item @(i == (int)ViewBag.PaginaAtual ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i, busca = ViewBag.Busca })">
+                    @i
+                </a>
+            </li>
+        }
+    </ul>
+</nav>
