@@ -52,12 +52,15 @@
                         <li class="nav-item"><a class="nav-link" href="/Combo/Index">🍻 Combos</a></li>
                         <li class="nav-item"><a class="nav-link" href="/Cliente/Index">👥 Clientes</a></li>
                         <li class="nav-item"><a class="nav-link" href="/Comanda/Index">🧾 Comandas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Pedido/Index">📞 Pedidos</a></li>
 
                         @if (Context.Session.GetString("UsuarioTipo") == "Admin")
                         {
                             <li class="nav-item"><a class="nav-link" href="/Produto/Gerenciar">📦 Produtos</a></li>
                             <li class="nav-item"><a class="nav-link" href="/Relatorio/Index">📊 Relatórios</a></li>
                             <li class="nav-item"><a class="nav-link" href="/Usuario/Index">🧑‍💼 Usuários</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/Promocao/Index">🎁 Promoções</a></li>
+
                         }
                     </ul>
                 </div>

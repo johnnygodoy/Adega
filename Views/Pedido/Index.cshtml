@@ -1,0 +1,85 @@
+﻿@model List<Adega.Models.Pedido>
+@{
+    ViewBag.Title = "Pedidos WhatsApp";
+}
+
+<h2 class="text-white mb-4">📩 Pedidos Recebidos via WhatsApp</h2>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="busca" class="form-control" placeholder="🔍 Buscar por telefone ou mensagem" value="@ViewBag.Busca" />
+    </div>
+    <div class="col-md-3">
+        <input type="date" name="dataBusca" class="form-control" value="@ViewBag.DataBusca" />
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">🔍 Buscar</button>
+    </div>
+    <div class="col-md-2">
+        <a href="/Pedido/Index" class="btn btn-secondary w-100">❌ Limpar</a>
+    </div>
+</form>
+
+<table class="table table-dark table-bordered table-striped align-middle">
+   <thead class="table-secondary text-dark">
+    <tr>
+        <th>Telefone</th>
+        <th>Mensagem</th>
+        <th>Data/Hora</th>
+        <th>Status</th>
+        <th class="text-center">Ações</th>
+    </tr>
+</thead>
+<tbody>
+    @foreach (var pedido in Model)
+    {
+        <tr>
+            <td>@pedido.Telefone</td>
+            <td>@pedido.Mensagem</td>
+            <td>@pedido.DataHora.ToString("dd/MM/yyyy HH:mm")</td>
+            <td>
+                @if (pedido.Respondido)
+                {
+                    <span class="badge bg-success">Respondido</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark">Novo</span>
+                }
+            </td>
+            <td class="text-center">
+                @if (!pedido.Respondido)
+                {
+                    <form asp-controller="Pedido" asp-action="Responder" method="post" style="display:inline">
+                        <input type="hidden" name="id" value="@pedido.Id" />
+                        <button class="btn btn-sm btn-outline-primary">💬 Responder</button>
+                    </form>
+                }
+                else
+                {
+                    <span class="text-muted">—</span>
+                }
+            </td>
+        </tr>
+    }
+</tbody>
+
+</table>
+
+<nav>
+    <ul class="pagination justify-content-center">
+        @for (int i = 1; i <= (int)ViewBag.TotalPaginas; i++)
+        {
+            <li class="page-item @(i == (int)ViewBag.PaginaAtual ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i, busca = ViewBag.Busca })">@i</a>
+            </li>
+        }
+    </ul>
+</nav>
+@section Scripts {
+    <script>
+        setInterval(() => {
+            location.reload();
+        }, 10000); // a cada 10 segundos recarrega
+    </script>
+}

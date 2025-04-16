@@ -172,9 +172,9 @@ namespace Adega.Migrations
                         new
                         {
                             Id = 1,
-                            DataInstalacao = new DateTime(2025, 4, 14, 0, 0, 0, 0, DateTimeKind.Local),
-                            HashLicenca = "46a91bc588bacdea3d1eeb02995ef47693b446684991d0cf082c01fbefbe8d1b",
-                            LicencaValidaAte = new DateTime(2025, 5, 14, 0, 0, 0, 0, DateTimeKind.Local)
+                            DataInstalacao = new DateTime(2025, 4, 16, 0, 0, 0, 0, DateTimeKind.Local),
+                            HashLicenca = "f6326575ffaae6429d7fff31105f76900b294e258f90e0511dfde786fa53001e",
+                            LicencaValidaAte = new DateTime(2025, 5, 16, 0, 0, 0, 0, DateTimeKind.Local)
                         });
                 });
 
@@ -232,6 +232,31 @@ namespace Adega.Migrations
                     b.ToTable("Movimentacoes");
                 });
 
+            modelBuilder.Entity("Adega.Models.Pedido", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("DataHora")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Mensagem")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Respondido")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Telefone")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PedidosWhatsapp");
+                });
+
             modelBuilder.Entity("Adega.Models.Produto", b =>
                 {
                     b.Property<int>("Id")
@@ -262,6 +287,31 @@ namespace Adega.Migrations
                     b.HasIndex("CategoriaId");
 
                     b.ToTable("Produtos");
+                });
+
+            modelBuilder.Entity("Adega.Models.Promocao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Ativa")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CriadaEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Promocoes");
                 });
 
             modelBuilder.Entity("Adega.Models.Usuario", b =>

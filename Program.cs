@@ -62,7 +62,7 @@ using (var scope = app.Services.CreateScope())
         context.ConfiguracoesSistema.Add(new ConfiguracaoSistema
         {
             DataInstalacao = DateTime.Today,
-            LicencaValidaAte = DateTime.Today.AddDays(1)
+            LicencaValidaAte = DateTime.Today.AddDays(30)
         });
 
         context.SaveChanges();

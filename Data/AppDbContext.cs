@@ -23,6 +23,11 @@ namespace Adega.Data
 
         public DbSet<ConfiguracaoSistema> ConfiguracoesSistema { get; set; }
 
+        public DbSet<Pedido> PedidosWhatsapp { get; set; }
+
+        public DbSet<Promocao>Promocoes { get; set; }
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             modelBuilder.Entity<Usuario>().HasData(
