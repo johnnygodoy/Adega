@@ -9,22 +9,52 @@
 		<PackageIcon>iconeCaneca.png</PackageIcon>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<None Include="wwwroot\Imagens\fundoAdega.png" />
-		<None Include="wwwroot\Imagens\iconeCaneca.png">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-	</ItemGroup>
+  <ItemGroup>
+    <None Remove="Docs\IniciarSistema.bat" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.4" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\Imagens\fundoAdega.png" />
+    <None Include="wwwroot\Imagens\iconeCaneca.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup> 
+  
+<ItemGroup>
+  <Content Include="Data\adega.db">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+  </Content>
+  <Content Include="Docs\IniciarSistema.bat">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </Content>
+</ItemGroup>
+   <ItemGroup>
+  <None Update="wwwroot\**" CopyToPublishDirectory="PreserveNewest" />
+</ItemGroup>
+<ItemGroup>
+  <None Update="MiddlewareWhatsapp\**\*.*">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+  </None>
+</ItemGroup>
+<ItemGroup>
+  <None Update="Docs\README.md">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </None>
+  <None Update="MiddlewareWhatsapp\imagens\fundoAdega.png">
+    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+  </None>
+</ItemGroup>
 	<ItemGroup>
 		<Content Include="Data\adega.db">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
