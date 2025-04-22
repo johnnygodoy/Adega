@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-=======
 using Adega.Data;
 using Adega.Filters;
 using Adega.Models;
@@ -49,7 +39,6 @@ var app = builder.Build();
 
 app.UseSession();
 
->>>>>>> origin/Development
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -64,8 +53,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-<<<<<<< HEAD
-=======
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -82,5 +69,4 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
->>>>>>> origin/Development
 app.Run();
