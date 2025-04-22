@@ -1,0 +1,100 @@
+﻿@model Adega.ViewModels.ComboViewModel
+
+@{
+    var comboId = ViewBag.ComboId != null ? ViewBag.ComboId.ToString() : null;
+    var isEdicao = !string.IsNullOrEmpty(comboId);
+    ViewData["Title"] = isEdicao ? "Editar Combo" : "Criar Novo Combo";
+
+    int totalPaginas = ViewBag.TotalPaginas ?? 1;
+    int paginaAtual = ViewBag.PaginaAtual ?? 1;
+    string busca = ViewBag.Busca ?? string.Empty;
+}
+
+<div class="card p-4 bg-dark text-white">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>📦 @ViewData["Title"]</h2>
+    </div>
+
+    <!-- 🔍 FORMULÁRIO DE BUSCA (fora do form de criação) -->
+    <form method="get" asp-action="Criar" asp-controller="Combo" class="row g-2 mb-3 align-items-end">
+        <div class="col-md-6">
+            <input type="text" name="busca" value="@busca" class="form-control text-uppercase" placeholder="🔍 Buscar por nome do produto" />
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100">🔍 Buscar</button>
+        </div>
+        <div class="col-md-3">
+            <a href="@Url.Action("Criar", "Combo")" class="btn btn-secondary w-100">❌ Limpar</a>
+        </div>
+    </form>
+
+    <!-- ✅ FORM PRINCIPAL PARA CRIAÇÃO DO COMBO -->
+    <form method="post" asp-action="Criar" asp-route-id="@comboId">
+        <div class="mb-3">
+            <label class="form-label">Nome do Combo:</label>
+            <input asp-for="Nome" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Preço do Combo:</label>
+            <input asp-for="PrecoCombo" type="number" step="0.01" class="form-control" required />
+        </div>
+
+        <h4 class="text-white">🧾 Produtos do Combo</h4>
+        <table class="table table-bordered table-dark table-striped mt-2">
+            <thead>
+                <tr>
+                    <th>Selecionar</th>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Estoque Atual</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.ProdutosDisponiveis.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" asp-for="@Model.ProdutosDisponiveis[i].Selecionado" class="form-check-input" />
+                            <input type="hidden" asp-for="@Model.ProdutosDisponiveis[i].ProdutoId" />
+                            <input type="hidden" asp-for="@Model.ProdutosDisponiveis[i].Nome" />
+                        </td>
+                        <td>@Model.ProdutosDisponiveis[i].Nome</td>
+                        <td>
+                            <input asp-for="@Model.ProdutosDisponiveis[i].Quantidade" type="number" min="1" class="form-control" />
+                        </td>
+                        <td>
+                            <input type="text" class="form-control-plaintext text-white" readonly
+                                   value="@Model.ProdutosDisponiveis[i].EstoqueAtual" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="text-center bg-dark">
+                        <nav class="mt-3">
+                            <ul class="pagination justify-content-center mb-0">
+                                @for (int i = 1; i <= totalPaginas; i++)
+                                {
+                                    <li class="page-item @(i == paginaAtual ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("Criar", "Combo", new { page = i, busca = busca })">@i</a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="d-flex justify-content-between mt-4">
+            <button type="submit" class="btn btn-success">💾 Salvar</button>
+            <a href="javascript:history.back()" class="btn btn-secondary">⬅️ Voltar</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

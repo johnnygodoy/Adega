@@ -1,0 +1,34 @@
+﻿@model List<Adega.Models.Usuario>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="text-white">🔐 Usuários</h2>
+    <a href="/Usuario/Criar" class="btn btn-success">➕ Novo Usuário</a>
+</div>
+
+<table class="table table-dark table-striped table-hover table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>Nome</th>
+            <th>Tipo</th>
+            <th class="text-center">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var usuario in Model)
+        {
+            <tr>
+                <td>@usuario.Nome</td>
+                <td>@usuario.TipoUsuario</td>
+                <td class="text-center">
+                    <a href="/Usuario/Editar/@usuario.Id" class="btn btn-outline-primary btn-sm me-2">
+                        ✏️ Editar
+                    </a>
+                    <a href="/Usuario/Excluir/@usuario.Id" class="btn btn-outline-danger btn-sm"
+                       onclick="return confirm('Deseja excluir este usuário?')">
+                        🗑️ Excluir
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

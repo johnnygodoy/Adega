@@ -1,0 +1,199 @@
+﻿@model List<Adega.Models.Produto>
+@{
+    ViewBag.Title = "Venda Direta";
+    var categorias = (List<Adega.Models.Categoria>)ViewBag.Categorias;
+}
+
+<h2 class="text-white mb-4">💳 Venda Direta</h2>
+
+@if (TempData["Erro"] != null)
+{
+    <div class="alert alert-danger fw-bold">@TempData["Erro"]</div>
+}
+@if (TempData["Sucesso"] != null)
+{
+    <div class="alert alert-success fw-bold">@TempData["Sucesso"]</div>
+}
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="buscaNome" class="form-control text-uppercase" placeholder="🔍 Buscar produto"
+               value="@ViewBag.BuscaNome" />
+    </div>
+    <div class="col-md-4">
+        <select name="categoriaId" class="form-select">
+            <option value="">-- Todas as Categorias --</option>
+            @foreach (var cat in categorias)
+            {
+                <option value="@cat.Id" selected="@(cat.Id == (int?)ViewBag.CategoriaId)">@cat.Nome</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">🔍 Buscar</button>
+    </div>
+    <div class="col-md-2">
+        <a href="/VendaDireta/Index" class="btn btn-secondary w-100">❌ Limpar</a>
+    </div>
+</form>
+
+<table class="table table-dark table-bordered table-hover align-middle shadow-sm">
+    <thead class="table-secondary text-dark">
+        <tr>
+            <th>Produto</th>
+            <th>Preço</th>
+            <th>Estoque</th>
+            <th>Qtd</th>
+            <th class="text-center">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var produto in Model)
+        {
+            <tr>
+                <td>@produto.Nome</td>
+                <td>R$ @produto.PrecoVenda.ToString("F2")</td>
+                <td><input type="text" class="form-control-plaintext text-white" readonly value="@produto.QuantidadeEstoque" /></td>
+                <td>
+                    <input type="number" class="form-control" min="1" value="1" id="quantidade-@produto.Id" />
+                </td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-outline-success" onclick="adicionarAoCarrinho(@produto.Id, '@produto.Nome', '@produto.PrecoVenda.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)')">
+                        ➕ Adicionar
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+    <tfoot>
+        <tr>
+            <td colspan="6" class="text-center bg-dark">
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-center mb-0">
+                        @for (int i = 1; i <= (int)ViewBag.TotalPaginas; i++)
+                        {
+                            <li class="page-item @(i == (int)ViewBag.PaginaAtual ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { page = i, buscaNome = ViewBag.BuscaNome, categoriaId = ViewBag.CategoriaId })">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+
+<hr />
+
+<!-- Grid com os produtos adicionados à venda -->
+<h4 class="text-white mt-5">🛒 Itens da Venda</h4>
+
+<form method="post" action="/VendaDireta/FinalizarVenda" onsubmit="return enviarCarrinho();">
+    <input type="hidden" name="dadosCarrinho" id="dadosCarrinho" />
+
+    <table class="table table-bordered table-striped table-dark mt-3">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Preço Unitário</th>
+                <th>Total</th>
+                <th class="text-center">Remover</th>
+            </tr>
+        </thead>
+        <tbody id="carrinhoBody">
+            <!-- preenchido via JS -->
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between align-items-center mt-4 text-white">
+        <h4>Total: R$ <span id="totalVenda">0,00</span></h4>
+        <button type="submit" class="btn btn-success btn-lg">💰 Pagar</button>
+    </div>
+</form>
+
+
+@section Scripts {
+    <script>
+        let carrinho = [];
+
+        function adicionarAoCarrinho(id, nome, precoStr) {
+            const preco = parseFloat(precoStr.replace(',', '.'));
+            const inputQtd = document.getElementById(`quantidade-${id}`);
+            const quantidade = parseInt(inputQtd.value);
+
+            if (quantidade <= 0 || isNaN(quantidade)) return;
+
+            const existente = carrinho.find(p => p.id == id);
+            if (existente) {
+                existente.quantidade += quantidade;
+            } else {
+                carrinho.push({ id, nome, preco, quantidade });
+            }
+
+            atualizarCarrinho();
+        }
+
+          function atualizarCarrinho() {
+            const tbody = document.getElementById("carrinhoBody");
+            tbody.innerHTML = "";
+
+            let total = 0;
+
+            carrinho.forEach((item, index) => {
+                const subtotal = item.quantidade * item.preco;
+                total += subtotal;
+
+                const row = `
+                    <tr>
+                        <td>${item.nome}</td>
+                        <td>
+                            <input type="number" class="form-control form-control-sm"
+                                   value="${item.quantidade}" min="1"
+                                   onchange="atualizarQuantidade(${index}, this.value)" />
+                        </td>
+                        <td>R$ ${item.preco.toFixed(2).replace('.', ',')}</td>
+                        <td>R$ ${subtotal.toFixed(2).replace('.', ',')}</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-danger" onclick="removerItem(${index})">🗑️</button>
+                        </td>
+                    </tr>`;
+                tbody.innerHTML += row;
+            });
+
+            document.getElementById("totalVenda").innerText = total.toFixed(2).replace('.', ',');
+        }
+
+
+        function removerItem(index) {
+            carrinho.splice(index, 1);
+            atualizarCarrinho();
+        }
+
+                function atualizarQuantidade(index, novaQtd) {
+            const qtd = parseInt(novaQtd);
+            if (qtd > 0) {
+                carrinho[index].quantidade = qtd;
+                atualizarCarrinho();
+            }
+        }
+        function enviarCarrinho() {
+            if (carrinho.length === 0) {
+                alert("Adicione ao menos um produto.");
+                return false;
+            }
+
+            const json = JSON.stringify(carrinho);
+            document.getElementById("dadosCarrinho").value = json;
+            return true;
+        }
+
+
+    </script>
+}
+
+
+

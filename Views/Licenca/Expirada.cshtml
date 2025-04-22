@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Licença Expirada";
+}
+
+@if (TempData["Erro"] != null)
+{
+    <p style="color:red; margin-top:10px;">@TempData["Erro"]</p>
+}
+
+@if (TempData["Sucesso"] != null)
+{
+    <p style="color:green; margin-top:10px;">@TempData["Sucesso"]</p>
+}
+
+
+<h2 style="color:darkred">Licença Expirada</h2>
+
+<div style="color:red; font-weight:bold; margin-top:20px;">
+    Sua licença de uso expirou.<br />
+    Por favor, entre em contato com o suporte para renovar o sistema.
+</div>
+
+@if (TempData["Erro"] != null)
+{
+    <p style="color:red; margin-top:10px;">@TempData["Erro"]</p>
+}
+
+<form method="post" asp-action="Ativar">
+    <h3 style="margin-top:30px;">Ativação Manual</h3>
+    <label>Nova Data de Validade:</label>
+    <input type="date" name="novaData" required />
+    <br />
+    <label>Senha Secreta:</label>
+    <input type="password" name="senha" required />
+    <br /><br />
+    <button type="submit">Ativar Licença</button>
+</form>
+<p style="margin-top:20px;">
+    Suporte: <a href="mailto:joaorogodoy@gmail.com">joaorogodoy@gmail.com</a> |
+    <a href="tel:+5511971329882">(11) 97132-9882</a>
+</p>
+
+@if (TempData["Sucesso"] != null)
+{
+    <script>
+        setTimeout(function () {
+            window.location.href = '/Home/Index';
+        }, 3000); // Redireciona após 3 segundos
+    </script>
+}
+

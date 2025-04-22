@@ -1,0 +1,91 @@
+﻿@model List<Adega.Models.Comanda>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="text-white">🧾 Comanda</h2>
+</div>
+
+<!-- 🔍 FORMULÁRIO DE FILTRO -->
+<form method="get" class="row g-2 mb-3 align-items-end">
+    <div class="col-md-4">
+        <input type="text" name="cliente" class="form-control text-uppercase" placeholder="🔍 Nome do cliente" value="@ViewBag.Cliente" />
+    </div>
+
+    <div class="col-md-3">
+        <select name="status" class="form-select">
+            <option value="">-- Todos os status --</option>
+            <option value="Aberta" selected="@(ViewBag.Status == "Aberta")">Aberta</option>
+            <option value="Fechada" selected="@(ViewBag.Status == "Fechada")">Fechada</option>
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <input type="date" name="data" class="form-control" value="@ViewBag.Data?.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary w-100">🔍 Buscar</button>
+        <a href="/Comanda/Index" class="btn btn-secondary w-100">❌ Limpar</a>
+    </div>
+</form>
+<!-- 🔽 BOTÃO NOVA COMANDA SEPARADO E ALINHADO À DIREITA -->
+<div class="d-flex justify-content-end mb-3">
+    <a href="/Comanda/Criar" class="btn btn-success">➕ Nova Comanda</a>
+</div>
+
+
+
+
+
+<table class="table table-dark table-hover table-striped table-bordered rounded overflow-hidden shadow">
+    <thead class="table-secondary text-dark">
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Data</th>
+            <th>Status</th>
+            <th>Itens</th>
+            <th>Total</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            var total = c.Itens?.Sum(i => i.Quantidade * i.PrecoUnitario) ?? 0;
+
+            <tr>
+                <td>@c.Id</td>
+                <td>@c.Cliente?.Nome</td>
+                <td>@c.DataAbertura.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@c.Status</td>
+                <td>@(c.Itens?.Count ?? 0)</td>
+                <td>R$ @total.ToString("F2")</td>
+                <td>
+                    <a class="btn btn-sm btn-primary me-2" href="/Comanda/Detalhes/@c.Id">Abrir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+    <nav class="mt-4">
+    <tfoot>
+        <tr>
+            <td colspan="7" class="text-center bg-dark">
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-center mb-0">
+                            @for (int i = 1; i <= (int)ViewBag.TotalPaginas; i++)
+                            {
+                            <li class="page-item @(i == (int)ViewBag.PaginaAtual ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { page = i, buscaNome = ViewBag.BuscaNome, categoriaId = ViewBag.CategoriaId })">
+                                        @i
+                                </a>
+                            </li>
+                            }
+                    </ul>
+                </nav>
+            </td>
+        </tr>
+    </tfoot>
+
+    </nav>
+</table>

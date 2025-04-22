@@ -1,0 +1,228 @@
+﻿@model List<Adega.Models.Produto>
+@{
+    ViewBag.Title = "Gerenciar Produtos";
+    var categorias = (List<Adega.Models.Categoria>)ViewBag.Categorias;
+}
+
+<h2 class="text-white mb-4">📦 Gerenciar Produtos</h2>
+
+@if (TempData["Erro"] != null)
+{
+    <div class="alert alert-danger fw-bold">@TempData["Erro"]</div>
+}
+@if (TempData["Sucesso"] != null)
+{
+    <div class="alert alert-success fw-bold">@TempData["Sucesso"]</div>
+}
+
+@if (TempData["Alerta"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+        <strong>⚠️ Atenção:</strong> @TempData["Alerta"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="buscaNome" class="form-control" style="text-transform: uppercase;" placeholder="🔍 Buscar por nome"
+               value="@ViewBag.BuscaNome" />
+    </div>
+
+    <div class="col-md-4">
+        <select name="categoriaId" class="form-select">
+            <option value="">-- Todas as Categorias --</option>
+            @foreach (var cat in (List<Adega.Models.Categoria>)ViewBag.Categorias)
+            {
+                <option value="@cat.Id" selected="@(cat.Id == (int?)ViewBag.CategoriaId)"> @cat.Nome </option>
+
+            }
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">🔍 Buscar</button>
+    </div>
+
+    <div class="col-md-2">
+        <a href="/Produto/Gerenciar" class="btn btn-secondary w-100">❌ Limpar</a>
+    </div>
+</form>
+
+
+<table class="table table-dark table-bordered table-hover align-middle shadow-sm">
+    <thead class="table-secondary text-dark">
+        <tr>
+            <th>Nome</th>
+            <th>Preço Compra</th>
+            <th>Preço Venda</th>
+            <th>Estoque</th>
+            <th>Categoria</th>
+            <th class="text-center">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var produto in Model)
+        {
+            <tr id="linha-@produto.Id">
+                <td>@produto.Nome</td>
+                <td><input type="text" name="PrecoCompra" value="@produto.PrecoCompra.ToString("F2")" class="form-control campo-edit" disabled /></td>
+                <td><input type="text" name="PrecoVenda" value="@produto.PrecoVenda.ToString("F2")" class="form-control campo-edit" disabled /></td>
+                <td><input type="number" name="QuantidadeEstoque" value="@produto.QuantidadeEstoque" class="form-control campo-edit" disabled /></td>
+                <td>
+                    <select name="CategoriaId" class="form-select campo-edit" disabled>
+                        @foreach (var cat in categorias)
+                        {
+                            <option value="@cat.Id" selected="@(cat.Id == produto.CategoriaId)">@cat.Nome</option>
+                        }
+                    </select>
+                </td>
+                <td class="text-center">
+                    <div class="d-flex justify-content-center gap-2">
+                        <form method="post" asp-action="AtualizarEstoquePorId" class="d-flex gap-2 align-items-center">
+                            <input type="hidden" name="Id" value="@produto.Id" />
+                            <input type="hidden" name="Nome" value="@produto.Nome" />
+                            <input type="hidden" class="hd-preco-compra" name="PrecoCompra" />
+                            <input type="hidden" class="hd-preco-venda" name="PrecoVenda" />
+                            <input type="hidden" class="hd-quantidade" name="QuantidadeEstoque" />
+                            <input type="hidden" class="hd-categoria" name="CategoriaId" />
+
+                            <button type="button" onclick="habilitarLinha(@produto.Id)" class="btn btn-sm btn-outline-primary">✏️ Alterar</button>
+                            <button type="submit" class="btn btn-sm btn-success btn-salvar d-none">💾 Salvar</button>
+                        </form>
+
+                        <form method="post" asp-action="Excluir" asp-controller="Produto" onsubmit="return confirm('Deseja realmente excluir o produto @produto.Nome?')">
+                            <input type="hidden" name="id" value="@produto.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">🗑️ Excluir</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+
+    <nav class="mt-4">
+    <tfoot>
+        <tr>
+            <td colspan="6" class="text-center bg-dark">
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-center mb-0">
+                            @for (int i = 1; i <= (int)ViewBag.TotalPaginas; i++)
+                            {
+                            <li class="page-item @(i == (int)ViewBag.PaginaAtual ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Gerenciar", new { page = i, buscaNome = ViewBag.BuscaNome, categoriaId = ViewBag.CategoriaId })">
+                                        @i
+                                </a>
+                            </li>
+                            }
+                    </ul>
+                </nav>
+            </td>
+        </tr>
+    </tfoot>
+
+    </nav>
+
+    <hr />
+
+</table>
+
+
+<form method="post" asp-action="AdicionarNovo" class="bg-dark p-4 rounded shadow-sm text-white">
+
+    <div class="mb-3 ps-2 pt-2">
+        <h4 class="text-white m-0">➕ Adicionar Novo Produto</h4>
+    </div>
+
+    <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label">Nome:</label>
+            <input type="text" id="txtNome" name="Nome" class="form-control" required />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Preço Compra:</label>
+            <input type="text" id="txtPrecoCompra" name="PrecoCompra" class="form-control" required />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Preço Venda:</label>
+            <input type="text" id="txtPrecoVenda" name="PrecoVenda" class="form-control" required />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Quantidade:</label>
+            <input type="number" id="txtEstoque" name="QuantidadeEstoque" class="form-control" required />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Categoria:</label>
+            <select name="CategoriaId" id="categoriaSelect" class="form-select" required>
+                <option value="">-- Categoria --</option>
+                @foreach (var cat in categorias)
+                {
+                    <option value="@cat.Id">@cat.Nome</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-1 d-grid">
+            <button type="submit" class="btn btn-success">Adicionar</button>
+        </div>
+    </div>
+
+
+
+</form>
+
+@section Scripts {
+    <script>
+        function habilitarLinha(id) {
+            const linha = document.getElementById(`linha-${id}`);
+            const campos = linha.querySelectorAll('.campo-edit');
+            campos.forEach(c => c.removeAttribute('disabled'));
+
+            const btnSalvar = linha.querySelector('.btn-salvar');
+            btnSalvar.classList.remove('d-none');
+
+            btnSalvar.closest('form').addEventListener('submit', function () {
+                const hiddenCompra = linha.querySelector('.hd-preco-compra');
+                const hiddenVenda = linha.querySelector('.hd-preco-venda');
+                const hiddenQtd = linha.querySelector('.hd-quantidade');
+                const hiddenCategoria = linha.querySelector('.hd-categoria');
+                const visiveis = linha.querySelectorAll('.campo-edit');
+
+                hiddenCompra.value = visiveis[0].value;
+                hiddenVenda.value = visiveis[1].value;
+                hiddenQtd.value = visiveis[2].value;
+                hiddenCategoria.value = visiveis[3].value;
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const inputNome = document.getElementById("txtNome");
+
+            if (inputNome) {
+                inputNome.addEventListener("blur", function () {
+                    const nome = this.value.trim();
+                    if (nome.length === 0) return;
+
+                    fetch(`/Produto/ObterProdutoPorNome?nome=${encodeURIComponent(nome)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data) {
+                              document.getElementById("txtPrecoCompra").value = data.precoCompra.toFixed(2).replace('.', ',');
+                              document.getElementById("txtPrecoVenda").value = data.precoVenda.toFixed(2).replace('.', ',');
+                              document.getElementById("txtEstoque").value = data.estoque;
+
+                                        const categoriaSelect = document.getElementById("categoriaSelect");
+                                     if (categoriaSelect && data.categoriaId) {
+                                         categoriaSelect.value = data.categoriaId.toString();
+                                     }
+
+                            }
+                        })
+                        .catch(err => console.error("Erro ao buscar produto:", err));
+                });
+            }
+        });
+    </script>
+}
+
