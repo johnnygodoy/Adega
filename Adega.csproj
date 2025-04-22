@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Docs\IniciarSistema.bat" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\Imagens\fundoAdega.png" />
     <None Include="wwwroot\Imagens\iconeCaneca.png">
       <Pack>True</Pack>
@@ -30,6 +34,9 @@
     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     <CopyToPublishDirectory>Always</CopyToPublishDirectory>
   </Content>
+  <Content Include="Docs\IniciarSistema.bat">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </Content>
 </ItemGroup>
    <ItemGroup>
   <None Update="wwwroot\**" CopyToPublishDirectory="PreserveNewest" />
@@ -41,6 +48,9 @@
   </None>
 </ItemGroup>
 <ItemGroup>
+  <None Update="Docs\README.md">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </None>
   <None Update="MiddlewareWhatsapp\imagens\fundoAdega.png">
     <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
   </None>
