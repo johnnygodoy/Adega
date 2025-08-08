@@ -47,6 +47,27 @@ builder.Services.AddControllersWithViews(options =>
 
 var app = builder.Build();
 
+// === MIGRATE + SEED (antes de usar o contexto em qualquer lugar) ===
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // cria/aplica as migrations (cria o /data/adega.db no container)
+    db.Database.Migrate();
+
+    // seed inicial
+    if (!db.ConfiguracoesSistema.Any())
+    {
+        db.ConfiguracoesSistema.Add(new ConfiguracaoSistema
+        {
+            DataInstalacao = DateTime.Today,
+            LicencaValidaAte = DateTime.Today.AddDays(30)
+        });
+        db.SaveChanges();
+    }
+}
+// === fim MIGRATE + SEED ===
+
 app.UseSession();
 
 if (!app.Environment.IsDevelopment())
@@ -62,21 +83,5 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-    if (!context.ConfiguracoesSistema.Any())
-    {
-        context.ConfiguracoesSistema.Add(new ConfiguracaoSistema
-        {
-            DataInstalacao = DateTime.Today,
-            LicencaValidaAte = DateTime.Today.AddDays(30)
-        });
-
-        context.SaveChanges();
-    }
-}
 
 app.Run();

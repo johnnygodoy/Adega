@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Adega.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250416130543_Initial")]
-    partial class Initial
+    [Migration("20250808194242_InitSqlite")]
+    partial class InitSqlite
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.4");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.8");
 
             modelBuilder.Entity("Adega.Models.Categoria", b =>
                 {
@@ -175,9 +175,9 @@ namespace Adega.Migrations
                         new
                         {
                             Id = 1,
-                            DataInstalacao = new DateTime(2025, 4, 16, 0, 0, 0, 0, DateTimeKind.Local),
-                            HashLicenca = "f6326575ffaae6429d7fff31105f76900b294e258f90e0511dfde786fa53001e",
-                            LicencaValidaAte = new DateTime(2025, 5, 16, 0, 0, 0, 0, DateTimeKind.Local)
+                            DataInstalacao = new DateTime(2025, 8, 8, 0, 0, 0, 0, DateTimeKind.Local),
+                            HashLicenca = "d10699f344e05c2b06ab643fcc1c1b8e405aacadc85963074057e4f030a36b53",
+                            LicencaValidaAte = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Local)
                         });
                 });
 
@@ -248,6 +248,9 @@ namespace Adega.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("Respondido")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Telefone")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -287,6 +290,31 @@ namespace Adega.Migrations
                     b.HasIndex("CategoriaId");
 
                     b.ToTable("Produtos");
+                });
+
+            modelBuilder.Entity("Adega.Models.Promocao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Ativa")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CriadaEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Promocoes");
                 });
 
             modelBuilder.Entity("Adega.Models.Usuario", b =>
