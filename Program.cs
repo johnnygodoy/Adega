@@ -19,9 +19,19 @@ var builder = WebApplication.CreateBuilder(args);
 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("pt-BR");
 CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("pt-BR");
 
-var caminhoDb = Path.Combine(Directory.GetCurrentDirectory(), "Data", "adega.db");
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite($"Data Source={caminhoDb}"));
+var envConn = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+string connStr = !string.IsNullOrWhiteSpace(envConn)
+    ? envConn
+    : (Directory.Exists("/data") ? "Data Source=/data/adega.db" : "Data Source=Data/adega.db");
+
+builder.Services.AddDbContext<AppDbContext>(opt =>
+{
+    if (connStr.Contains("Host=", StringComparison.OrdinalIgnoreCase))
+        opt.UseNpgsql(connStr);
+    else
+        opt.UseSqlite(connStr);
+});
+
 
 
 builder.Services.AddControllersWithViews();

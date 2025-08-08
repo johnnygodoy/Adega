@@ -42,7 +42,7 @@ namespace Adega.Data
 
             var data = DateTime.Today;
             var validade = data.AddDays(30);
-            var chaveSecreta = "chave-secreta-joao123"; // 🔐 você pode alterar
+            var chaveSecreta = "joaorogodoy"; // 🔐 você pode alterar
 
             var hash = HashHelper.CalcularSHA256(validade.ToString("yyyy-MM-dd") + chaveSecreta);
 
