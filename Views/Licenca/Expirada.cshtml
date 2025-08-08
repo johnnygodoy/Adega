@@ -2,50 +2,104 @@
     ViewData["Title"] = "Licença Expirada";
 }
 
-@if (TempData["Erro"] != null)
-{
-    <p style="color:red; margin-top:10px;">@TempData["Erro"]</p>
-}
+<div class="container my-4">
+    <h2 class="text-white mb-3">🔒 Licença Expirada</h2>
 
-@if (TempData["Sucesso"] != null)
-{
-    <p style="color:green; margin-top:10px;">@TempData["Sucesso"]</p>
-}
+    <!-- Alerts TempData -->
+    @if (TempData["Erro"] != null)
+    {
+        <div class="alert alert-danger d-flex align-items-center" role="alert">
+            <span class="me-2">❌</span>
+            <div>@TempData["Erro"]</div>
+        </div>
+    }
+    @if (TempData["Sucesso"] != null)
+    {
+        <div class="alert alert-success d-flex align-items-center" role="alert">
+            <span class="me-2">✅</span>
+            <div>@TempData["Sucesso"]</div>
+        </div>
+    }
 
+    <!-- Card principal -->
+    <div class="card bg-dark text-white shadow-lg">
+        <div class="card-body">
+            <div class="alert alert-warning text-dark fw-semibold" role="alert">
+                ⚠️ Sua licença de uso expirou. Entre em contato com o suporte para renovar o sistema.
+            </div>
 
-<h2 style="color:darkred">Licença Expirada</h2>
+            <!-- Contatos de suporte -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card bg-secondary">
+                        <div class="card-body">
+                            <h5 class="card-title mb-2">📞 Suporte</h5>
+                            <p class="mb-1">
+                                <a class="link-light text-decoration-none" href="mailto:joaorogodoy@gmail.com">
+                                    ✉️ joaorogodoy@gmail.com
+                                </a>
+                            </p>
+                            <p class="mb-0">
+                                <a class="link-light text-decoration-none" href="tel:+5511971329882">
+                                    ☎️ (11) 97132-9882
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-<div style="color:red; font-weight:bold; margin-top:20px;">
-    Sua licença de uso expirou.<br />
-    Por favor, entre em contato com o suporte para renovar o sistema.
+            <!-- Form de ativação manual -->
+            <form method="post" asp-action="Ativar" id="formAtivacao" class="row g-3">
+                <div class="col-12">
+                    <h5 class="mb-2">🛠️ Ativação Manual</h5>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="novaData" class="form-label">Nova Data de Validade</label>
+                    <div class="input-group">
+                        <span class="input-group-text">📅</span>
+                        <input type="date" class="form-control" id="novaData" name="novaData" required />
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="senha" class="form-label">Senha Secreta</label>
+                    <div class="input-group">
+                        <span class="input-group-text">🔑</span>
+                        <input type="password" class="form-control" id="senha" name="senha" required />
+                    </div>
+                </div>
+
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100" id="btnAtivar">
+                        Ativar Licença
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
-@if (TempData["Erro"] != null)
-{
-    <p style="color:red; margin-top:10px;">@TempData["Erro"]</p>
-}
-
-<form method="post" asp-action="Ativar">
-    <h3 style="margin-top:30px;">Ativação Manual</h3>
-    <label>Nova Data de Validade:</label>
-    <input type="date" name="novaData" required />
-    <br />
-    <label>Senha Secreta:</label>
-    <input type="password" name="senha" required />
-    <br /><br />
-    <button type="submit">Ativar Licença</button>
-</form>
-<p style="margin-top:20px;">
-    Suporte: <a href="mailto:joaorogodoy@gmail.com">joaorogodoy@gmail.com</a> |
-    <a href="tel:+5511971329882">(11) 97132-9882</a>
-</p>
-
-@if (TempData["Sucesso"] != null)
-{
+@section Scripts {
     <script>
-        setTimeout(function () {
-            window.location.href = '/Home/Index';
-        }, 3000); // Redireciona após 3 segundos
+        // Evita duplo envio e dá feedback
+        const form = document.getElementById('formAtivacao');
+        const btn = document.getElementById('btnAtivar');
+
+        form?.addEventListener('submit', function () {
+            btn.disabled = true;
+            btn.innerText = 'Ativando...';
+        });
+
+        // Redireciona após sucesso (caso o controller setou TempData["Sucesso"])
+        @if (TempData["Sucesso"] != null)
+        {
+                <text>
+                    setTimeout(function () {
+                        window.location.href = '/Home/Index';
+                    }, 3000);
+                </text>
+        }
     </script>
 }
-
