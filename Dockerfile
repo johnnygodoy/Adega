@@ -2,12 +2,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
+# copie a solução e o csproj da RAIZ
 COPY *.sln ./
-COPY Adega/*.csproj Adega/
+COPY *.csproj ./
 RUN dotnet restore
 
+# copie o restante e publique
 COPY . .
-RUN dotnet publish Adega/Adega.csproj -c Release -o /app/publish
+RUN dotnet publish -c Release -o /app/publish
 
 # ===== Runtime =====
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
