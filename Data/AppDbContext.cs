@@ -1,14 +1,12 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿// Base: continua exatamente como você já tem
 using Adega.Models;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using Adega.Utils;
+using Microsoft.EntityFrameworkCore;
 
 namespace Adega.Data
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        public AppDbContext(DbContextOptions options) : base(options) { }
 
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Produto> Produtos { get; set; }
@@ -20,31 +18,23 @@ namespace Adega.Data
         public DbSet<ComandaItem> ComandaItens { get; set; }
         public DbSet<MovimentacaoFinanceira> Movimentacoes { get; set; }
         public DbSet<LogSistema> Logs { get; set; }
-
         public DbSet<ConfiguracaoSistema> ConfiguracoesSistema { get; set; }
-
         public DbSet<Pedido> PedidosWhatsapp { get; set; }
-
-        public DbSet<Promocao>Promocoes { get; set; }
-
-
+        public DbSet<Promocao> Promocoes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
-            modelBuilder.Entity<Usuario>().HasData(
-                new Usuario
-                {
-                    Id = 1,
-                    Nome = "admin",
-                    Senha = "1234",
-                    TipoUsuario = "Admin"
-                }
-            );
+            modelBuilder.Entity<Usuario>().HasData(new Usuario
+            {
+                Id = 1,
+                Nome = "admin",
+                Senha = "1234",
+                TipoUsuario = "Admin"
+            });
 
             var data = DateTime.Today;
             var validade = data.AddDays(30);
-            var chaveSecreta = "joaorogodoy"; // 🔐 você pode alterar
-
-            var hash = HashHelper.CalcularSHA256(validade.ToString("yyyy-MM-dd") + chaveSecreta);
+            var chaveSecreta = "joaorogodoy";
+            var hash = Adega.Utils.HashHelper.CalcularSHA256(validade.ToString("yyyy-MM-dd") + chaveSecreta);
 
             modelBuilder.Entity<ConfiguracaoSistema>().HasData(new ConfiguracaoSistema
             {
@@ -54,5 +44,16 @@ namespace Adega.Data
                 HashLicenca = hash
             });
         }
+    }
+
+    // Cascas (cada uma terá SEU snapshot e suas migrações)
+    public class AppDbContextPg : AppDbContext
+    {
+        public AppDbContextPg(DbContextOptions<AppDbContextPg> options) : base(options) { }
+    }
+
+    public class AppDbContextSqlite : AppDbContext
+    {
+        public AppDbContextSqlite(DbContextOptions<AppDbContextSqlite> options) : base(options) { }
     }
 }

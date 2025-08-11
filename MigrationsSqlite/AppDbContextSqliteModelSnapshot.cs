@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Adega.Migrations
+namespace Adega.MigrationsSqlite
 {
-    [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(AppDbContextSqlite))]
+    partial class AppDbContextSqliteModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -172,9 +172,9 @@ namespace Adega.Migrations
                         new
                         {
                             Id = 1,
-                            DataInstalacao = new DateTime(2025, 8, 8, 0, 0, 0, 0, DateTimeKind.Local),
-                            HashLicenca = "d10699f344e05c2b06ab643fcc1c1b8e405aacadc85963074057e4f030a36b53",
-                            LicencaValidaAte = new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Local)
+                            DataInstalacao = new DateTime(2025, 8, 11, 0, 0, 0, 0, DateTimeKind.Local),
+                            HashLicenca = "642f8c370bd41d3242eb396334a8f8cb1bc19efb930d64a6ebf20a51b19db217",
+                            LicencaValidaAte = new DateTime(2025, 9, 10, 0, 0, 0, 0, DateTimeKind.Local)
                         });
                 });
 

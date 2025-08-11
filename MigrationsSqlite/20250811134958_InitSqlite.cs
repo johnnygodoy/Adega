@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Adega.Migrations
+namespace Adega.MigrationsSqlite
 {
     /// <inheritdoc />
     public partial class InitSqlite : Migration
@@ -257,7 +257,7 @@ namespace Adega.Migrations
             migrationBuilder.InsertData(
                 table: "ConfiguracoesSistema",
                 columns: new[] { "Id", "DataInstalacao", "HashLicenca", "LicencaValidaAte" },
-                values: new object[] { 1, new DateTime(2025, 8, 8, 0, 0, 0, 0, DateTimeKind.Local), "d10699f344e05c2b06ab643fcc1c1b8e405aacadc85963074057e4f030a36b53", new DateTime(2025, 9, 7, 0, 0, 0, 0, DateTimeKind.Local) });
+                values: new object[] { 1, new DateTime(2025, 8, 11, 0, 0, 0, 0, DateTimeKind.Local), "642f8c370bd41d3242eb396334a8f8cb1bc19efb930d64a6ebf20a51b19db217", new DateTime(2025, 9, 10, 0, 0, 0, 0, DateTimeKind.Local) });
 
             migrationBuilder.InsertData(
                 table: "Usuarios",

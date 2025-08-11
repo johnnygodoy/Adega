@@ -7,6 +7,7 @@
 	<DebugType>full</DebugType>
     <WarningLevel>4</WarningLevel>
     <PackageIcon>iconeCaneca.png</PackageIcon>
+    <UserSecretsId>73974494-84c8-4bf0-9df7-04007fe439d6</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

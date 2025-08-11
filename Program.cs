@@ -4,58 +4,71 @@ using Adega.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
-
-
 var culturaBR = new CultureInfo("pt-BR");
 CultureInfo.DefaultThreadCurrentCulture = culturaBR;
 CultureInfo.DefaultThreadCurrentUICulture = culturaBR;
-CultureInfo.CurrentCulture = culturaBR;
-CultureInfo.CurrentUICulture = culturaBR;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Definir a cultura para pt-BR
-CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("pt-BR");
-CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("pt-BR");
-
+// 1) tenta ENV var
 var envConn = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
-string connStr = !string.IsNullOrWhiteSpace(envConn)
-    ? envConn
-    : (Directory.Exists("/data") ? "Data Source=/data/adega.db" : "Data Source=Data/adega.db");
+// 2) tenta config / secrets
+var cfgConn = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<AppDbContext>(opt =>
+// caminho absoluto do SQLite (local x container)
+var sqlitePath = Directory.Exists("/data")
+    ? "/data/adega.db"
+    : Path.Combine(builder.Environment.ContentRootPath, "Data", "adega.db");
+
+var connStr = !string.IsNullOrWhiteSpace(envConn) ? envConn
+            : !string.IsNullOrWhiteSpace(cfgConn) ? cfgConn
+            : $"Data Source={sqlitePath}";
+
+var isPg = connStr.Contains("Host=", StringComparison.OrdinalIgnoreCase);
+
+// registra o DbContext correto + migrations assembly da “casca”
+if (isPg)
 {
-    if (connStr.Contains("Host=", StringComparison.OrdinalIgnoreCase))
-        opt.UseNpgsql(connStr);
-    else
-        opt.UseSqlite(connStr);
-});
+    builder.Services.AddDbContext<AppDbContext, AppDbContextPg>(opt =>
+     opt.UseNpgsql(connStr, npg =>
+     {
+         npg.MigrationsAssembly(typeof(AppDbContextPg).Assembly.FullName);
+         npg.EnableRetryOnFailure(
+             maxRetryCount: 5,
+             maxRetryDelay: TimeSpan.FromSeconds(10),
+             errorCodesToAdd: null);
+     })
+     // aumenta o timeout padrão de comando
+     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+}
+else
+{
+    builder.Services.AddDbContext<AppDbContext, AppDbContextSqlite>(opt =>
+        opt.UseSqlite(connStr,
+            x => x.MigrationsAssembly(typeof(AppDbContextSqlite).Assembly.FullName)));
+}
 
-
-
-builder.Services.AddControllersWithViews();
+// MVC + filtro + sessão
+builder.Services.AddControllersWithViews(o => o.Filters.Add<LicencaValidaFilter>());
 builder.Services.AddSession();
-
 builder.Services.AddScoped<LicencaValidaFilter>();
-
-builder.Services.AddControllersWithViews(options =>
-{
-    options.Filters.Add<LicencaValidaFilter>();
-});
-
 
 var app = builder.Build();
 
-// === MIGRATE + SEED (antes de usar o contexto em qualquer lugar) ===
+// === MIGRATE + SEED ===
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-    // cria/aplica as migrations (cria o /data/adega.db no container)
+    // se for SQLite, garanta a pasta do arquivo antes
+    if (!isPg)
+    {
+        var dir = Path.GetDirectoryName(sqlitePath)!;
+        Directory.CreateDirectory(dir);
+    }
+
     db.Database.Migrate();
 
-    // seed inicial
     if (!db.ConfiguracoesSistema.Any())
     {
         db.ConfiguracoesSistema.Add(new ConfiguracaoSistema
@@ -75,9 +88,7 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
 }
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthorization();
 
 app.MapControllerRoute(
